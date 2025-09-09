@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title></title>
+</head>
+<body>
+    <?php
+    include "include/css.html";
+    include "config1.php";
+
+    if(isset($_SESSION['userId'])!=null){
+        $userId=$_SESSION['userId'];
+        $sql="select * from user_details where id='$userId'";
+        $result=$conn->query($sql);
+        if($result->num_rows==0){
+
+        echo "<script>alert('No Record Found');document.location.href='profile.php';</script>";
+
+        }
+        else {
+            
+        while($row=$result->fetch_assoc()){
+            $name=$row["name"];
+        }
+    }
+}
+
+?>
+<!-- About Start -->
+        <div class="container-xxl py-5">
+            <div class="container">
+                <div class="row g-5 align-items-center">
+                    <div class="col-lg-6 wow fadeIn" data-wow-delay="0.1s">
+                        <div class="row g-0 about-bg rounded overflow-hidden">
+                            <div class="col-6 text-start">
+                                <img class="img-fluid w-100" src="img/about-1.jpg">
+                            </div>
+                            <div class="col-6 text-start">
+                                <img class="img-fluid" src="img/about-2.jpg" style="width: 85%; margin-top: 15%;">
+                            </div>
+                            <div class="col-6 text-end">
+                                <img class="img-fluid" src="img/about-3.jpg" style="width: 85%;">
+                            </div>
+                            <div class="col-6 text-end">
+                                <img class="img-fluid w-100" src="img/about-4.jpg">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 wow fadeIn" data-wow-delay="0.5s">
+                        <h1 class="mb-4">We Help To Get The Best Job And Find A Talent</h1>
+                        <p class="mb-4">Tempor erat elitr rebum at clita. Diam dolor diam ipsum sit. Aliqu diam amet diam et eos. Clita erat ipsum et lorem et sit, sed stet lorem sit clita duo justo magna dolore erat amet</p>
+                        <p><i class="fa fa-check text-primary me-3"></i>Tempor erat elitr rebum at clita</p>
+                        <p><i class="fa fa-check text-primary me-3"></i>Aliqu diam amet diam et eos</p>
+                        <p><i class="fa fa-check text-primary me-3"></i>Clita duo justo magna dolore erat amet</p>
+                        <a class="btn btn-primary py-3 px-5 mt-3" href="">Read More</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- About End -->
+
+    <div class="container-xxl py-5">
+
+<?php 
+    $getJobPost="SELECT id,sum(opening) as opening,jobtype FROM `jobpostdetail` WHERE status=1 group by jobtype";
+    $jobPostResult=$conn->query($getJobPost);
+?>
+        <div class="container">
+                <h1 class="text-center mb-5 wow fadeInUp" data-wow-delay="0.1s">Explore By Category</h1>
+            <div class="row g-4">
+        <?php
+                while($jobRows=$jobPostResult->fetch_assoc()){
+
+                $jobType = $jobRows["jobtype"];
+    
+    $icon = "";
+
+    if ($jobType == "Customer Service") {
+        $icon = "fa-headset";
+    } else if ($jobType == "Design and Creative") {
+        $icon = "fa-paint-brush";
+    } else if ($jobType == "Marketing") {
+        $icon = "fa-bullhorn";
+    } else if ($jobType == "Human Resource") {
+        $icon = "fa-users";
+    } else if ($jobType == "Project Management") {
+        $icon = "fa-tasks";
+    }
+    //  else ($jobType == " Other") {
+    //     $icon = "fa-briefcase";
+    // }
+        ?>
+                    <div class="col-lg-3 col-sm-6 wow fadeInUp" data-wow-delay="0.1s" style="border: 2px solid #08cf7f; width: 270px; margin-right: 15px; border-radius: 10px;">
+                        <a class="cat-item rounded p-4" href="user/view_jobs_details.php?jobtype=<?php echo $jobRows["jobtype"];?>">
+                            <i class="fa fa-3x fa-mail-bulk text-primary <?php echo $icon; ?> mb-4"></i>
+                            <h6 class="mb-3"><?php echo $jobRows["jobtype"];?></h6>
+                            <p class="mb-0"><?php echo $jobRows["opening"];?> Vacancy</p>
+                        </a>
+                    </div>
+        <?php
+            }
+        ?>
+                    
+            </div>
+        </div>
+        </div>
+        <!-- Category End -->
+
+        <!-- Jobs Start -->
+        <div class="container-xxl py-5">
+            <div class="container">
+                <h1 class="text-center mb-5 wow fadeInUp" data-wow-delay="0.1s">Job Listing</h1>
+<?php
+   if(isset($_POST["b1"])){
+        $jobtype=$_POST["jobtype"];
+        $name=$_POST["name"];
+        $address=$_POST["address"];
+        $email=$_POST["email"];
+        $contact=$_POST["contact"];
+        $description=$_POST["description"];
+        $opening=$_POST["opening"];
+        $sql="insert into jobpostdetail(jobtype , name,address,email,contact,description,opening)values('$jobtype' , '$name','$address','$email','$contact','$description','$opening')";
+
+        if($conn->query($sql)==true){
+            echo "<script>alert('Jobpost Added Successfully');document.location.href='jobpost.php';</script>";
+        }
+        else{
+            echo "<script>alert('Sorry jobpost Not Added Successfully');document.location.href='jobpost.php';</script>";
+        }
+    }
+      $sql="select * from jobpostdetail";
+      $result=$conn->query($sql);
+      $cnt=$result->num_rows;
+      if($cnt==0){
+        echo "<script>alert('No User Found');document.location.href='jobpost.php';</script>";
+        exit();
+      }
+      else{
+        ?><br/><br/><br/>
+     <?php
+        while($row=$result->fetch_assoc()){
+            $status=$row["status"]==1?"Inactive":"Active";
+       ?>
+         <div class="job-item p-4 mb-4" style="width: 90%; margin-left: 5%; border: 2px solid #08cf7f; border-radius: 10px;">
+
+                            <div class="row g-4">
+                                    <div class="col-sm-12 col-md-8 d-flex align-items-center">
+                                        <img class="flex-shrink-0 img-fluid border rounded" src="img/com-logo-2.jpg" alt="" style="width: 80px; height: 80px;">
+                                        <div class="text-start ps-4">
+                                            <h5 class="mb-3"><?php echo $row["name"];?></h5>
+                                            <span class="text-truncate me-3"><i class="fa fa-map-marker-alt text-primary me-2"></i><?php echo $row["address"];?></span>
+                                            <span class="text-truncate me-3"><i class="far fa-envelope text-primary me-2"></i><?php echo $row["email"];?></span>
+                                            <span class="text-truncate me-0"><i class="fa fa-phone text-primary me-2"></i><?php echo $row["contact"];?></span>                                     
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-12 col-md-4 d-flex flex-column align-items-start align-items-md-end justify-content-center">
+                                        <div class="text-truncate" style="font-size:18px; color: black"><i class="far fa--alt text-primary me-2">Openings</i><?php echo $row["opening"];?>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+     <?php
+
+          }
+        }
+     ?>
+            </div>
+        </div>
+        <div class="container-xxl py-5 wow fadeInUp" data-wow-delay="0.1s">
+            <div class="container">
+                <h1 class="text-center mb-5">Our Clients Say!!!</h1>
+                <div class="owl-carousel testimonial-carousel">
+                    <div class="testimonial-item bg-light rounded p-4">
+                        <i class="fa fa-quote-left fa-2x text-primary mb-3"></i>
+                        <p>Dolor et eos labore, stet justo sed est sed. Diam sed sed dolor stet amet eirmod eos labore diam</p>
+                        <div class="d-flex align-items-center">
+                            <img class="img-fluid flex-shrink-0" src="img/testimonial-1.jpg" style="width: 50px; height: 50px; border-radius: 50%;">
+                            <div class="ps-3">
+                                <h5 class="mb-1">Client Name</h5>
+                                <small>Profession</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="testimonial-item bg-light rounded p-4">
+                        <i class="fa fa-quote-left fa-2x text-primary mb-3"></i>
+                        <p>Dolor et eos labore, stet justo sed est sed. Diam sed sed dolor stet amet eirmod eos labore diam</p>
+                        <div class="d-flex align-items-center">
+                            <img class="img-fluid flex-shrink-0" src="img/testimonial-2.jpg" style="width: 50px; height: 50px; border-radius: 50%;">
+                            <div class="ps-3">
+                                <h5 class="mb-1">Client Name</h5>
+                                <small>Profession</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="testimonial-item bg-light rounded p-4">
+                        <i class="fa fa-quote-left fa-2x text-primary mb-3"></i>
+                        <p>Dolor et eos labore, stet justo sed est sed. Diam sed sed dolor stet amet eirmod eos labore diam</p>
+                        <div class="d-flex align-items-center">
+                            <img class="img-fluid flex-shrink-0" src="img/testimonial-3.jpg" style="width: 50px; height: 50px; border-radius: 50%;">
+                            <div class="ps-3">
+                                <h5 class="mb-1">Client Name</h5>
+                                <small>Profession</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="testimonial-item bg-light rounded p-4">
+                        <i class="fa fa-quote-left fa-2x text-primary mb-3"></i>
+                        <p>Dolor et eos labore, stet justo sed est sed. Diam sed sed dolor stet amet eirmod eos labore diam</p>
+                        <div class="d-flex align-items-center">
+                            <img class="img-fluid flex-shrink-0" src="img/testimonial-4.jpg" style="width: 50px; height: 50px; border-radius: 50%;">
+                            <div class="ps-3">
+                                <h5 class="mb-1">Client Name</h5>
+                                <small>Profession</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Testimonial End -->
+
+</body>
+</html>
